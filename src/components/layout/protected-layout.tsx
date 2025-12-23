@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { removeAuthToken } from '@/lib/api/client'
 import { Wallet, Home, Receipt, Target, CreditCard, Settings, Moon, Sun, Menu } from 'lucide-react'
 import { FloatingAddButton } from './floating-add-button'
+import { BottomNav } from './bottom-nav'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -289,11 +290,17 @@ export function ProtectedLayout({ children }: ProtectedLayoutProps) {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 pb-20 lg:pb-8">
         {children || <Outlet />}
       </main>
 
-      <FloatingAddButton />
+      {/* Floating add button apenas no desktop */}
+      <div className="hidden lg:block">
+        <FloatingAddButton />
+      </div>
+
+      {/* Bottom navigation apenas no mobile */}
+      <BottomNav />
     </div>
   )
 }

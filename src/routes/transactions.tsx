@@ -15,9 +15,16 @@ import {
 } from '@/components/ui/select'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { useState } from 'react'
-import { Trash2, ArrowUpCircle, ArrowDownCircle } from 'lucide-react'
+import { Trash2, ArrowUpCircle, ArrowDownCircle, Filter, X } from 'lucide-react'
 import { useAccounts, useCategories } from '@/lib/queries'
 import type { TransactionType } from '@/types'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 
 export const Route = createFileRoute('/transactions')({
   beforeLoad: async () => {
@@ -36,6 +43,7 @@ function TransactionsPage() {
   const [typeFilter, setTypeFilter] = useState<TransactionType | 'all'>('all')
   const [startDate, setStartDate] = useState<string>('')
   const [endDate, setEndDate] = useState<string>('')
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const { data: transactions, isLoading } = useTransactions({
     account_id: accountFilter !== 'all' ? accountFilter : undefined,
@@ -55,88 +63,151 @@ function TransactionsPage() {
     }
   }
 
+  // Conta quantos filtros estão ativos
+  const activeFiltersCount = [
+    accountFilter !== 'all',
+    categoryFilter !== 'all',
+    typeFilter !== 'all',
+    startDate !== '',
+    endDate !== '',
+  ].filter(Boolean).length
+
+  const clearFilters = () => {
+    setAccountFilter('all')
+    setCategoryFilter('all')
+    setTypeFilter('all')
+    setStartDate('')
+    setEndDate('')
+  }
+
+  // Componente de filtros reutilizável
+  const FiltersContent = () => (
+    <>
+      {activeFiltersCount > 0 && (
+        <Button
+          variant="outline"
+          onClick={clearFilters}
+          className="w-full md:w-auto"
+        >
+          <X className="h-4 w-4 mr-2" />
+          Limpar Filtros
+        </Button>
+      )}
+
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-5">
+        <div className="space-y-2">
+          <Label>Conta</Label>
+          <Select value={accountFilter} onValueChange={setAccountFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="Todas" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas</SelectItem>
+              {accounts?.map((account) => (
+                <SelectItem key={account.id} value={account.id}>
+                  {account.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Categoria</Label>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="Todas" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas</SelectItem>
+              {categories?.map((category) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Tipo</Label>
+          <Select
+            value={typeFilter}
+            onValueChange={(v) => setTypeFilter(v as typeof typeFilter)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="income">Receita</SelectItem>
+              <SelectItem value="expense">Despesa</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Data Início</Label>
+          <Input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Data Fim</Label>
+          <Input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </div>
+      </div>
+    </>
+  )
+
   return (
     <ProtectedLayout>
       <div className="space-y-6">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Transações</h2>
-          <p className="text-muted-foreground">
-            Gerencie todas as suas transações
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">Transações</h2>
+            <p className="text-muted-foreground">
+              Gerencie todas as suas transações
+            </p>
+          </div>
+          {/* Botão de filtros apenas no mobile */}
+          <div className="md:hidden">
+            <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" className="relative">
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filtros
+                  {activeFiltersCount > 0 && (
+                    <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
+                      {activeFiltersCount}
+                    </span>
+                  )}
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[80vw] max-w-[400px] overflow-y-auto">
+                <SheetHeader>
+                  <SheetTitle>Filtros</SheetTitle>
+                </SheetHeader>
+                <div className="mt-6 space-y-6">
+                  <FiltersContent />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
 
-        {/* Filtros */}
-        <Card>
+        {/* Filtros visíveis no desktop/tablet */}
+        <Card className="hidden md:block">
           <CardContent className="p-6">
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
-              <div className="space-y-2">
-                <Label>Conta</Label>
-                <Select value={accountFilter} onValueChange={setAccountFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todas" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas</SelectItem>
-                    {accounts?.map((account) => (
-                      <SelectItem key={account.id} value={account.id}>
-                        {account.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Categoria</Label>
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todas" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas</SelectItem>
-                    {categories?.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Tipo</Label>
-                <Select
-                  value={typeFilter}
-                  onValueChange={(v) => setTypeFilter(v as typeof typeFilter)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
-                    <SelectItem value="income">Receita</SelectItem>
-                    <SelectItem value="expense">Despesa</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Data Início</Label>
-                <Input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Data Fim</Label>
-                <Input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </div>
+            <div className="space-y-4">
+              <FiltersContent />
             </div>
           </CardContent>
         </Card>
