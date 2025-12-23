@@ -6,8 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/utils'
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { ArrowUpCircle, ArrowDownCircle } from 'lucide-react'
+import { ArrowUpCircle, ArrowDownCircle, BarChart3 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/button'
+import { Link } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: async () => {
@@ -65,11 +67,19 @@ function DashboardPage() {
   return (
     <ProtectedLayout>
       <div className="space-y-6">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-          <p className="text-muted-foreground">
-            Visão geral das suas finanças
-          </p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+            <p className="text-muted-foreground">
+              Visão geral das suas finanças
+            </p>
+          </div>
+          <Link to="/analytics" className="inline-block">
+            <Button variant="outline">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Ver Analytics
+            </Button>
+          </Link>
         </div>
 
         {/* Métricas - Mobile/Tablet com Tabs, Desktop lado a lado */}
