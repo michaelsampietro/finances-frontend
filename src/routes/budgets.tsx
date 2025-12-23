@@ -95,7 +95,7 @@ function BudgetsPage() {
   return (
     <ProtectedLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-3xl font-bold tracking-tight">Orçamentos</h2>
             <p className="text-muted-foreground">
@@ -104,7 +104,7 @@ function BudgetsPage() {
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 Novo Orçamento
               </Button>
@@ -208,15 +208,16 @@ function BudgetsPage() {
                   )}
                 </div>
 
-                <div className="flex justify-end gap-2">
+                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setDialogOpen(false)}
+                    className="w-full sm:w-auto"
                   >
                     Cancelar
                   </Button>
-                  <Button type="submit" disabled={createBudget.isPending}>
+                  <Button type="submit" disabled={createBudget.isPending} className="w-full sm:w-auto">
                     {createBudget.isPending ? 'Salvando...' : 'Salvar'}
                   </Button>
                 </div>
@@ -225,7 +226,7 @@ function BudgetsPage() {
           </Dialog>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {budgets?.filter((b) => !b.deleted_at).map((budget) => (
             <BudgetCard
               key={budget.id}

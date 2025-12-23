@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { X } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -136,7 +137,17 @@ export function AddTransactionModal({ open, onOpenChange }: AddTransactionModalP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl md:max-h-[90vh]">
+        {/* Botão X maior no mobile, acima do header */}
+        <div className="md:hidden flex justify-end mb-4 -mt-2 -mr-2">
+          <button
+            onClick={() => onOpenChange(false)}
+            className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 p-2"
+          >
+            <X className="h-6 w-6" />
+            <span className="sr-only">Close</span>
+          </button>
+        </div>
         <DialogHeader>
           <DialogTitle>Adicionar Transação ou Transferência</DialogTitle>
           <DialogDescription>
@@ -267,17 +278,19 @@ export function AddTransactionModal({ open, onOpenChange }: AddTransactionModalP
                 />
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => onOpenChange(false)}
+                  className="w-full sm:w-auto"
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="submit"
                   disabled={createTransaction.isPending}
+                  className="w-full sm:w-auto"
                 >
                   {createTransaction.isPending ? 'Salvando...' : 'Salvar'}
                 </Button>
@@ -368,17 +381,19 @@ export function AddTransactionModal({ open, onOpenChange }: AddTransactionModalP
                 />
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => onOpenChange(false)}
+                  className="w-full sm:w-auto"
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="submit"
                   disabled={createTransfer.isPending}
+                  className="w-full sm:w-auto"
                 >
                   {createTransfer.isPending ? 'Salvando...' : 'Salvar'}
                 </Button>

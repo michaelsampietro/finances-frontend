@@ -173,17 +173,18 @@ function AccountsPage() {
   return (
     <ProtectedLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        {/* Header: título/descrição em uma linha, botões em outra no mobile */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-3xl font-bold tracking-tight">Contas</h2>
             <p className="text-muted-foreground">
               Gerencie suas contas bancárias e transferências
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Dialog open={transferDialogOpen} onOpenChange={setTransferDialogOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline">
+                <Button variant="outline" className="w-full sm:w-auto">
                   <ArrowRightLeft className="h-4 w-4 mr-2" />
                   Transferência
                 </Button>
@@ -286,15 +287,16 @@ function AccountsPage() {
                     />
                   </div>
 
-                  <div className="flex justify-end gap-2">
+                  <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => setTransferDialogOpen(false)}
+                      className="w-full sm:w-auto"
                     >
                       Cancelar
                     </Button>
-                    <Button type="submit" disabled={createTransfer.isPending}>
+                    <Button type="submit" disabled={createTransfer.isPending} className="w-full sm:w-auto">
                       {createTransfer.isPending ? 'Salvando...' : 'Salvar'}
                     </Button>
                   </div>
@@ -372,7 +374,7 @@ function AccountsPage() {
                     )}
                   </div>
 
-                  <div className="flex justify-end gap-2">
+                  <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                     <Button
                       type="button"
                       variant="outline"
@@ -381,12 +383,14 @@ function AccountsPage() {
                         setEditingAccount(null)
                         accountForm.reset()
                       }}
+                      className="w-full sm:w-auto"
                     >
                       Cancelar
                     </Button>
                     <Button
                       type="submit"
                       disabled={createAccount.isPending || updateAccount.isPending}
+                      className="w-full sm:w-auto"
                     >
                       {createAccount.isPending || updateAccount.isPending
                         ? 'Salvando...'
@@ -400,7 +404,7 @@ function AccountsPage() {
         </div>
 
         {/* Lista de Contas */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {accounts?.filter((a) => !a.deleted_at).map((account) => (
             <Card key={account.id}>
               <CardHeader>

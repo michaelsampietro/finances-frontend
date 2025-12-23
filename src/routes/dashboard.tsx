@@ -7,6 +7,7 @@ import { formatCurrency } from '@/lib/utils'
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { ArrowUpCircle, ArrowDownCircle } from 'lucide-react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: async () => {
@@ -71,93 +72,56 @@ function DashboardPage() {
           </p>
         </div>
 
-        {/* Semana Atual */}
+        {/* Métricas - Mobile/Tablet com Tabs, Desktop lado a lado */}
         <div>
-          <h3 className="text-xl font-semibold mb-4">Semana Atual</h3>
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Receitas</CardTitle>
-                <ArrowUpCircle className="h-4 w-4 text-green-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-green-600">
-                  {weekLoading ? '...' : formatCurrency(weekIncome)}
-                </div>
-              </CardContent>
-            </Card>
+          {/* Mobile/Tablet: Tabs */}
+          <Tabs defaultValue="week" className="lg:hidden">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="week">Semana</TabsTrigger>
+              <TabsTrigger value="month">Mês</TabsTrigger>
+            </TabsList>
+            <TabsContent value="week" className="mt-4">
+              <MetricsCards
+                title="Semana Atual"
+                income={weekIncome}
+                expenses={weekExpenses}
+                balance={weekBalance}
+                isLoading={weekLoading}
+              />
+            </TabsContent>
+            <TabsContent value="month" className="mt-4">
+              <MetricsCards
+                title="Mês Atual"
+                income={monthIncome}
+                expenses={monthExpenses}
+                balance={monthBalance}
+                isLoading={monthLoading}
+              />
+            </TabsContent>
+          </Tabs>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Despesas</CardTitle>
-                <ArrowDownCircle className="h-4 w-4 text-red-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-red-600">
-                  {weekLoading ? '...' : formatCurrency(weekExpenses)}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Saldo Líquido</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className={`text-2xl font-bold ${
-                    weekBalance >= 0 ? 'text-green-600' : 'text-red-600'
-                  }`}
-                >
-                  {weekLoading ? '...' : formatCurrency(weekBalance)}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Mês Atual */}
-        <div>
-          <h3 className="text-xl font-semibold mb-4">Mês Atual</h3>
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Receitas</CardTitle>
-                <ArrowUpCircle className="h-4 w-4 text-green-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-green-600">
-                  {monthLoading ? '...' : formatCurrency(monthIncome)}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Despesas</CardTitle>
-                <ArrowDownCircle className="h-4 w-4 text-red-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-red-600">
-                  {monthLoading ? '...' : formatCurrency(monthExpenses)}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Saldo Líquido</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className={`text-2xl font-bold ${
-                    monthBalance >= 0 ? 'text-green-600' : 'text-red-600'
-                  }`}
-                >
-                  {monthLoading ? '...' : formatCurrency(monthBalance)}
-                </div>
-              </CardContent>
-            </Card>
+          {/* Desktop: Lado a lado */}
+          <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6">
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Semana Atual</h3>
+              <MetricsCards
+                title=""
+                income={weekIncome}
+                expenses={weekExpenses}
+                balance={weekBalance}
+                isLoading={weekLoading}
+              />
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Mês Atual</h3>
+              <MetricsCards
+                title=""
+                income={monthIncome}
+                expenses={monthExpenses}
+                balance={monthBalance}
+                isLoading={monthLoading}
+              />
+            </div>
           </div>
         </div>
 
@@ -202,6 +166,76 @@ function DashboardPage() {
         </div>
       </div>
     </ProtectedLayout>
+  )
+}
+
+function MetricsCards({
+  title,
+  income,
+  expenses,
+  balance,
+  isLoading,
+}: {
+  title: string
+  income: number
+  expenses: number
+  balance: number
+  isLoading: boolean
+}) {
+  return (
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Receitas</CardTitle>
+          <ArrowUpCircle className="h-4 w-4 text-green-600" />
+        </CardHeader>
+        <CardContent>
+          <div 
+            className="text-2xl lg:text-xl xl:text-lg font-bold text-green-600 break-words"
+            style={{
+              fontSize: 'clamp(1.125rem, 2.5vw + 0.5rem, 1.5rem)',
+            }}
+          >
+            {isLoading ? '...' : formatCurrency(income)}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Despesas</CardTitle>
+          <ArrowDownCircle className="h-4 w-4 text-red-600" />
+        </CardHeader>
+        <CardContent>
+          <div 
+            className="text-2xl lg:text-xl xl:text-lg font-bold text-red-600 break-words"
+            style={{
+              fontSize: 'clamp(1.125rem, 2.5vw + 0.5rem, 1.5rem)',
+            }}
+          >
+            {isLoading ? '...' : formatCurrency(expenses)}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Saldo Líquido</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div
+            className={`text-2xl lg:text-xl xl:text-lg font-bold break-words ${
+              balance >= 0 ? 'text-green-600' : 'text-red-600'
+            }`}
+            style={{
+              fontSize: 'clamp(1.125rem, 2.5vw + 0.5rem, 1.5rem)',
+            }}
+          >
+            {isLoading ? '...' : formatCurrency(balance)}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 

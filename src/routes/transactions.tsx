@@ -68,7 +68,7 @@ function TransactionsPage() {
         {/* Filtros */}
         <Card>
           <CardContent className="p-6">
-            <div className="grid gap-4 md:grid-cols-5">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
               <div className="space-y-2">
                 <Label>Conta</Label>
                 <Select value={accountFilter} onValueChange={setAccountFilter}>
