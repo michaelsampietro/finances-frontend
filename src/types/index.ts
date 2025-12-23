@@ -188,3 +188,29 @@ export interface TransactionFilter {
   end_date?: string
 }
 
+// Analytics types
+export interface AnalyticsSummary {
+  income: number
+  expenses: number
+  balance: number
+}
+
+export interface CategoryBreakdown {
+  category_id: string
+  category_name: string
+  total: number
+}
+
+export interface MonthlyComparison {
+  month: string
+  income: number
+  expenses: number
+  balance: number
+}
+
+export interface TrendData {
+  date: string
+  income: number
+  expenses: number
+}
+

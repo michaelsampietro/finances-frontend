@@ -137,7 +137,7 @@ export function AddTransactionModal({ open, onOpenChange }: AddTransactionModalP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl md:max-h-[90vh]">
+      <DialogContent className="max-w-[100dvw] md:h-[90vh]">
         {/* Botão X maior no mobile, acima do header */}
         <div className="md:hidden flex justify-end mb-4 -mt-2 -mr-2">
           <button
