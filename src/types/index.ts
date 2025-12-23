@@ -127,6 +127,14 @@ export interface CreateTransferRequest {
   date?: string
 }
 
+export interface UpdateTransferRequest {
+  from_account_id?: string
+  to_account_id?: string
+  amount?: number
+  description?: string
+  date?: string
+}
+
 export interface CreateAccountRequest {
   name: string
   type: AccountType

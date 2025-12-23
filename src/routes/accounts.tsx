@@ -28,6 +28,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { formatCurrency, formatDate, formatDateToISO } from '@/lib/utils'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -70,6 +71,10 @@ function AccountsPage() {
   const [accountDialogOpen, setAccountDialogOpen] = useState(false)
   const [transferDialogOpen, setTransferDialogOpen] = useState(false)
   const [editingAccount, setEditingAccount] = useState<string | null>(null)
+  const [confirmDeleteAccountOpen, setConfirmDeleteAccountOpen] = useState(false)
+  const [confirmDeleteTransferOpen, setConfirmDeleteTransferOpen] = useState(false)
+  const [accountToDelete, setAccountToDelete] = useState<string | null>(null)
+  const [transferToDelete, setTransferToDelete] = useState<string | null>(null)
 
   const { data: accounts } = useAccounts()
   const { data: transfers } = useTransfers()
@@ -149,14 +154,26 @@ function AccountsPage() {
   }
 
   const handleDelete = (id: string) => {
-    if (confirm('Tem certeza que deseja deletar esta conta?')) {
-      deleteAccount.mutate(id)
-    }
+    setAccountToDelete(id)
+    setConfirmDeleteAccountOpen(true)
   }
 
   const handleDeleteTransfer = (id: string) => {
-    if (confirm('Tem certeza que deseja deletar esta transferência?')) {
-      deleteTransfer.mutate(id)
+    setTransferToDelete(id)
+    setConfirmDeleteTransferOpen(true)
+  }
+
+  const confirmDeleteAccount = () => {
+    if (accountToDelete) {
+      deleteAccount.mutate(accountToDelete)
+      setAccountToDelete(null)
+    }
+  }
+
+  const confirmDeleteTransfer = () => {
+    if (transferToDelete) {
+      deleteTransfer.mutate(transferToDelete)
+      setTransferToDelete(null)
     }
   }
 
@@ -508,6 +525,29 @@ function AccountsPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Dialogs de confirmação */}
+        <ConfirmDialog
+          open={confirmDeleteAccountOpen}
+          onOpenChange={setConfirmDeleteAccountOpen}
+          title="Deletar conta"
+          description="Tem certeza que deseja deletar esta conta? Esta ação não pode ser desfeita."
+          confirmText="Deletar"
+          cancelText="Cancelar"
+          onConfirm={confirmDeleteAccount}
+          variant="destructive"
+        />
+
+        <ConfirmDialog
+          open={confirmDeleteTransferOpen}
+          onOpenChange={setConfirmDeleteTransferOpen}
+          title="Deletar transferência"
+          description="Tem certeza que deseja deletar esta transferência? Esta ação não pode ser desfeita."
+          confirmText="Deletar"
+          cancelText="Cancelar"
+          onConfirm={confirmDeleteTransfer}
+          variant="destructive"
+        />
       </div>
     </ProtectedLayout>
   )

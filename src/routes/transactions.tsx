@@ -25,6 +25,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 
 export const Route = createFileRoute('/transactions')({
   beforeLoad: async () => {
@@ -44,6 +45,8 @@ function TransactionsPage() {
   const [startDate, setStartDate] = useState<string>('')
   const [endDate, setEndDate] = useState<string>('')
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
+  const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null)
 
   const { data: transactions, isLoading } = useTransactions({
     account_id: accountFilter !== 'all' ? accountFilter : undefined,
@@ -58,8 +61,14 @@ function TransactionsPage() {
   const deleteTransaction = useDeleteTransaction()
 
   const handleDelete = (id: string) => {
-    if (confirm('Tem certeza que deseja deletar esta transação?')) {
-      deleteTransaction.mutate(id)
+    setTransactionToDelete(id)
+    setConfirmDeleteOpen(true)
+  }
+
+  const confirmDelete = () => {
+    if (transactionToDelete) {
+      deleteTransaction.mutate(transactionToDelete)
+      setTransactionToDelete(null)
     }
   }
 
@@ -274,6 +283,18 @@ function TransactionsPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Dialog de confirmação */}
+        <ConfirmDialog
+          open={confirmDeleteOpen}
+          onOpenChange={setConfirmDeleteOpen}
+          title="Deletar transação"
+          description="Tem certeza que deseja deletar esta transação? Esta ação não pode ser desfeita."
+          confirmText="Deletar"
+          cancelText="Cancelar"
+          onConfirm={confirmDelete}
+          variant="destructive"
+        />
       </div>
     </ProtectedLayout>
   )

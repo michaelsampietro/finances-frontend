@@ -27,6 +27,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { formatCurrency, formatDate, formatDateToISO } from '@/lib/utils'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -59,6 +60,8 @@ export const Route = createFileRoute('/budgets')({
 
 function BudgetsPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
+  const [budgetToDelete, setBudgetToDelete] = useState<string | null>(null)
   const { data: budgets } = useBudgets()
   const { data: categories } = useCategories()
   const createBudget = useCreateBudget()
@@ -87,8 +90,14 @@ function BudgetsPage() {
   }
 
   const handleDelete = (id: string) => {
-    if (confirm('Tem certeza que deseja deletar este orçamento?')) {
-      deleteBudget.mutate(id)
+    setBudgetToDelete(id)
+    setConfirmDeleteOpen(true)
+  }
+
+  const confirmDelete = () => {
+    if (budgetToDelete) {
+      deleteBudget.mutate(budgetToDelete)
+      setBudgetToDelete(null)
     }
   }
 
@@ -243,6 +252,18 @@ function BudgetsPage() {
             </CardContent>
           </Card>
         )}
+
+        {/* Dialog de confirmação */}
+        <ConfirmDialog
+          open={confirmDeleteOpen}
+          onOpenChange={setConfirmDeleteOpen}
+          title="Deletar orçamento"
+          description="Tem certeza que deseja deletar este orçamento? Esta ação não pode ser desfeita."
+          confirmText="Deletar"
+          cancelText="Cancelar"
+          onConfirm={confirmDelete}
+          variant="destructive"
+        />
       </div>
     </ProtectedLayout>
   )

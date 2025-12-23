@@ -1,6 +1,4 @@
-import type { AuthResponse } from '@/types'
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
+const API_BASE_URL = (import.meta.env as { VITE_API_URL?: string }).VITE_API_URL || '/api/v1'
 
 export class ApiError extends Error {
   constructor(
@@ -19,9 +17,9 @@ async function fetchApi<T>(
 ): Promise<T> {
   const token = localStorage.getItem('token')
   
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers,
+    ...(options.headers as Record<string, string>),
   }
 
   if (token) {

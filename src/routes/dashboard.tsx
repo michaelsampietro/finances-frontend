@@ -170,7 +170,6 @@ function DashboardPage() {
 }
 
 function MetricsCards({
-  title,
   income,
   expenses,
   balance,

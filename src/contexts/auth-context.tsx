@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
-import { setAuthToken, removeAuthToken, getAuthToken } from '@/lib/api/client'
+import { createContext, useContext, useState, useEffect } from 'react'
+import { removeAuthToken, getAuthToken } from '@/lib/api/client'
 import { usersApi } from '@/lib/api/users'
 import type { User } from '@/types'
 

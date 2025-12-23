@@ -4,13 +4,6 @@ import { cn } from '@/lib/utils'
 import { AddTransactionModal } from '@/components/modals/add-transaction-modal'
 import { useState } from 'react'
 
-const navItems = [
-  { to: '/dashboard', label: 'Dashboard', icon: Home },
-  { to: '/transactions', label: 'Transações', icon: Receipt },
-  { to: '/budgets', label: 'Orçamentos', icon: Target },
-  { to: '/accounts', label: 'Contas', icon: CreditCard },
-]
-
 export function BottomNav() {
   const router = useRouterState({
     select: (state) => state.location.pathname,
